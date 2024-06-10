@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/Admin');
 // const jwt = require('jsonwebtoken');
-const Admin = require('../models/Admin');
+// const Admin = require('../models/Admin');
 const User = require('../models/User');
 
 module.exports.adminAuth = async (req, res, next) => {
