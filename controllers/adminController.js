@@ -1,12 +1,31 @@
 const Admin = require('../models/Admin');
 const User = require('../models/User');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+exports.signInAdmin = async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        const admin = await Admin.findOne({ username });
+        if (!admin || !bcrypt.compareSync(password, admin.password)) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+        const token = jwt.sign({ userId: admin._id, role: 'admin' }, process.env.SECRET_KEY, { expiresIn: '1h' });
+        res.status(200).json({ message: 'Sign In successful', token });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+};
 
 exports.createUser = async (req, res) => {
     try {
-        const adminId = req.admin._id; // assuming admin ID is available in req.admin
+        const adminId = req.admin._id;
         const { username, password } = req.body;
 
-        const newUser = new User({ username, password, admin: adminId });
+        const hashedPassword = bcrypt.hashSync(password, 8);
+        const newUser = new User({ username, password: hashedPassword, admin: adminId });
         await newUser.save();
 
         await Admin.findByIdAndUpdate(adminId, { $push: { users: newUser._id } });

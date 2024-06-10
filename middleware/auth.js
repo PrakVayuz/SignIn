@@ -1,12 +1,15 @@
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/Admin');
+const jwt = require('jsonwebtoken');
+const Admin = require('../models/Admin');
+const User = require('../models/User');
 
-module.exports = async (req, res, next) => {
+module.exports.adminAuth = async (req, res, next) => {
     const token = req.header('Authorization').replace('Bearer ', '');
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const admin = await Admin.findOne({ _id: decoded._id, 'tokens.token': token });
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        const admin = await Admin.findOne({ _id: decoded.userId });
 
         if (!admin) {
             throw new Error();
@@ -36,3 +39,5 @@ module.exports.userAuth = async (req, res, next) => {
         res.status(401).send({ error: 'Please authenticate' });
     }
 };
+
+

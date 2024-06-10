@@ -1,22 +1,20 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
 const app = express();
 const port = 3000;
-const secretKey = process.env.SECRET_KEY;
-
 const connectDB = require('./db');
+const adminRoutes = require('./routes/admin');
+const userRoutes = require('./routes/user');
+
+// Connect to MongoDB
 connectDB();
 
 app.use(bodyParser.json());
 
-const adminRoutes = require('./routes/admin');
-const userRoutes = require('./routes/user');
-
+// Use routes
 app.use('/api/admin', adminRoutes);
 app.use('/api/user', userRoutes);
 
@@ -27,7 +25,7 @@ app.get('/protected', (req, res) => {
         return res.status(403).send({ message: 'No token provided' });
     }
 
-    jwt.verify(token, secretKey, (err, decoded) => {
+    jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
         if (err) {
             return res.status(500).send({ message: 'Failed to authenticate token' });
         }
