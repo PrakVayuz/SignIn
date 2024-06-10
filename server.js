@@ -2,21 +2,23 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const mongoose = require('mongoose');
+require('dotenv').config();
 
 const app = express();
 const port = 3000;
-
-require('dotenv').config();
 const secretKey = process.env.SECRET_KEY;
 
+// Connect to MongoDB
+const connectDB = require('./db');
+connectDB();
 
 app.use(bodyParser.json());
 
 const user = {
     userId: 'user123',
-    password: bcrypt.hashSync('pass123', 8) 
+    password: bcrypt.hashSync('pass123', 8)
 };
-
 
 app.post('/sign-in', (req, res) => {
     const { userId, password } = req.body;
@@ -55,7 +57,6 @@ app.post('/forgot-password', (req, res) => {
 
 let selectedEmoji = null;
 
-
 app.post('/select-emoji', (req, res) => {
     const { emojiType } = req.body;
 
@@ -84,7 +85,6 @@ app.post('/submit-form', (req, res) => {
 
     return res.status(200).send({ message: 'Form submitted successfully', formData });
 });
-
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
