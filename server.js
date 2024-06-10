@@ -9,7 +9,7 @@ const connectDB = require('./db');
 const adminRoutes = require('./routes/admin');
 const userRoutes = require('./routes/user');
 const Admin = require('./models/Admin');
-
+const bcrypt = require('bcryptjs');
 // Connect to MongoDB
 connectDB();
 
