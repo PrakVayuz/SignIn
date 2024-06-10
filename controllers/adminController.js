@@ -4,9 +4,9 @@ const User = require('../models/User');
 exports.createUser = async (req, res) => {
     try {
         const adminId = req.admin._id; // assuming admin ID is available in req.admin
-        const { username, email, password } = req.body;
+        const { username, password } = req.body;
 
-        const newUser = new User({ username, email, password, admin: adminId });
+        const newUser = new User({ username, password, admin: adminId });
         await newUser.save();
 
         await Admin.findByIdAndUpdate(adminId, { $push: { users: newUser._id } });

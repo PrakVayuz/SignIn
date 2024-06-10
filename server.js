@@ -9,32 +9,16 @@ const app = express();
 const port = 3000;
 const secretKey = process.env.SECRET_KEY;
 
-// Connect to MongoDB
 const connectDB = require('./db');
 connectDB();
 
 app.use(bodyParser.json());
 
-const user = {
-    userId: 'user123',
-    password: bcrypt.hashSync('pass123', 8)
-};
+const adminRoutes = require('./routes/admin');
+const userRoutes = require('./routes/user');
 
-app.post('/sign-in', (req, res) => {
-    const { userId, password } = req.body;
-
-    if (!userId || !password) {
-        return res.status(400).send({ message: 'UserID and Password are required' });
-    }
-
-    if (userId === user.userId && bcrypt.compareSync(password, user.password)) {
-        // Generate JWT token
-        const token = jwt.sign({ userId: user.userId }, secretKey, { expiresIn: '1h' });
-        return res.status(200).send({ message: 'Sign In successful', token });
-    } else {
-        return res.status(401).send({ message: 'Invalid UserID or Password' });
-    }
-});
+app.use('/api/admin', adminRoutes);
+app.use('/api/user', userRoutes);
 
 app.get('/protected', (req, res) => {
     const token = req.headers['authorization'];
