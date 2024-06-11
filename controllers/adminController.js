@@ -44,3 +44,19 @@ exports.createUser = async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+
+
+exports.getUsersByAdmin = async (req, res) => {
+    try {
+        const adminId = req.admin._id;
+
+        const admin = await Admin.findById(adminId).populate('users');
+        if (!admin) {
+            return res.status(404).json({ message: 'Admin not found' });
+        }
+
+        res.status(200).json({ users: admin.users });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+};

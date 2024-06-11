@@ -13,5 +13,7 @@ router.get('/test', (req, res) => {
     res.send('Admin route works!');
 });
 
+router.get('/users', authMiddleware.adminAuth, adminController.getUsersByAdmin);
+
 
 module.exports = router;
