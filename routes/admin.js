@@ -4,9 +4,14 @@ const adminController = require('../controllers/adminController');
 const authMiddleware = require('../middleware/auth');
 
 // Admin sign-in route
-router.post('/sign-in', adminController.signInAdmin);
+router.post('/signin', adminController.signInAdmin);
 
 // Route for creating users by admin
 router.post('/users', authMiddleware.adminAuth, adminController.createUser);
+
+router.get('/test', (req, res) => {
+    res.send('Admin route works!');
+});
+
 
 module.exports = router;

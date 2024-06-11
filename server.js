@@ -10,6 +10,8 @@ const adminRoutes = require('./routes/admin');
 const userRoutes = require('./routes/user');
 const Admin = require('./models/Admin');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
 // Connect to MongoDB
 connectDB();
 
@@ -69,25 +71,25 @@ app.post('/submit-form', (req, res) => {
     return res.status(200).send({ message: 'Form submitted successfully', formData });
 });
 
-const addAdmin = async () => {
-    const hashedPassword = bcrypt.hashSync('admin', 8);
+// const addAdmin = async () => {
+//     const hashedPassword = bcrypt.hashSync('admin', 8);
 
-    const admin = new Admin({
-        username: 'admin',
-        password: hashedPassword,
-    });
+//     const admin = new Admin({
+//         username: 'admin',
+//         password: hashedPassword,
+//     });
 
-    try {
-        await admin.save();
-        console.log('Admin created successfully');
-    } catch (error) {
-        console.error('Error creating admin:', error);
-    } finally {
-        mongoose.connection.close();
-    }
-};
+//     try {
+//         await admin.save();
+//         console.log('Admin created successfully');
+//     } catch (error) {
+//         console.error('Error creating admin:', error);
+//     } finally {
+//         mongoose.connection.close();
+//     }
+// };
 
-addAdmin();
+// addAdmin();
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);

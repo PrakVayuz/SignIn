@@ -4,6 +4,8 @@ const Admin = require('../models/Admin');
 // const Admin = require('../models/Admin');
 const User = require('../models/User');
 
+require("dotenv").config();
+
 module.exports.adminAuth = async (req, res, next) => {
     const token = req.header('Authorization').replace('Bearer ', '');
 
