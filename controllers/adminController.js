@@ -45,3 +45,13 @@ exports.getAllForms = async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+
+exports.getAllUsers = async (req, res) => {
+    try {
+        const adminId = req.admin._id;
+        const users = await User.find({ admin: adminId });
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+};
