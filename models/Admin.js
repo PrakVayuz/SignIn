@@ -14,7 +14,7 @@ const adminSchema = new mongoose.Schema({
         type: String,
         default: 'admin',
     },
-    users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+    users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 });
 
 const Admin = mongoose.model('Admin', adminSchema);

@@ -1,20 +1,7 @@
 const User = require('../models/User');
+const Form = require('../models/Form');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
-exports.registerUser = async (req, res) => {
-    try {
-        const { username, password } = req.body;
-        const hashedPassword = bcrypt.hashSync(password, 8);
-
-        const newUser = new User({ username, password: hashedPassword });
-        await newUser.save();
-
-        res.status(201).json({ message: 'User registered successfully', user: newUser });
-    } catch (error) {
-        res.status(500).json({ message: 'Server error', error });
-    }
-};
 
 exports.signInUser = async (req, res) => {
     try {
@@ -22,11 +9,27 @@ exports.signInUser = async (req, res) => {
 
         const user = await User.findOne({ username });
         if (!user || !bcrypt.compareSync(password, user.password)) {
-            return res.status(401).json({ message: 'Invalid email or password' });
+            return res.status(401).json({ message: 'Invalid username or password' });
         }
 
         const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, { expiresIn: '1h' });
         res.status(200).json({ message: 'Sign In successful', token });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+};
+
+exports.submitForm = async (req, res) => {
+    try {
+        const { name, contactNo, city, remarks, selectedEmoji } = req.body;
+        const userId = req.user._id;
+
+        const form = new Form({ name, contactNo, city, remarks, selectedEmoji, user: userId });
+        await form.save();
+
+        await User.findByIdAndUpdate(userId, { $push: { forms: form._id } });
+
+        res.status(201).json({ message: 'Form submitted successfully', form });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }

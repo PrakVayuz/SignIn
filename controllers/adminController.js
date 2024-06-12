@@ -1,32 +1,8 @@
 const Admin = require('../models/Admin');
 const User = require('../models/User');
+const Form = require('../models/Form');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
-exports.signInAdmin = async (req, res) => {
-    try {
-
-        console.log("Admin Chala");
-        const { username, password } = req.body;
-             
-        const admin = await Admin.findOne({ username });
-
-        if (!admin) {
-            return res.status(401).json({ message: 'Invalid username or password' });
-        }
-      console.log(admin);
-      const isPasswordValid = await bcrypt.compare(password, admin.password);
-      if (!isPasswordValid) {
-          return res.status(401).json({ message: 'Invalid username or password' });
-          }
-          
-          const token = jwt.sign({ userId: admin._id, role: 'admin' }, process.env.SECRET_KEY, { expiresIn: '1h' });
-          console.log(token);
-        res.status(200).json({ message: 'Sign In successful', token });
-    } catch (error) {
-        res.status(500).json({ message: 'Server error', error });
-    }
-};
 
 exports.createUser = async (req, res) => {
     try {
@@ -45,17 +21,26 @@ exports.createUser = async (req, res) => {
     }
 };
 
-
-exports.getUsersByAdmin = async (req, res) => {
+exports.signInAdmin = async (req, res) => {
     try {
-        const adminId = req.admin._id;
+        const { username, password } = req.body;
 
-        const admin = await Admin.findById(adminId).populate('users');
-        if (!admin) {
-            return res.status(404).json({ message: 'Admin not found' });
+        const admin = await Admin.findOne({ username });
+        if (!admin || !bcrypt.compareSync(password, admin.password)) {
+            return res.status(401).json({ message: 'Invalid username or password' });
         }
 
-        res.status(200).json({ users: admin.users });
+        const token = jwt.sign({ userId: admin._id, role: 'admin' }, process.env.SECRET_KEY, { expiresIn: '1h' });
+        res.status(200).json({ message: 'Sign In successful', token });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+};
+
+exports.getAllForms = async (req, res) => {
+    try {
+        const forms = await Form.find().populate('user');
+        res.status(200).json(forms);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }

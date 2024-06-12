@@ -1,19 +1,10 @@
 const express = require('express');
+const { createUser, getAllForms, signInAdmin } = require('../controllers/adminController');
+const { adminAuth } = require('../middleware/auth');
 const router = express.Router();
-const adminController = require('../controllers/adminController');
-const authMiddleware = require('../middleware/auth');
 
-// Admin sign-in route
-router.post('/signin', adminController.signInAdmin);
-
-// Route for creating users by admin
-router.post('/users', authMiddleware.adminAuth, adminController.createUser);
-
-router.get('/test', (req, res) => {
-    res.send('Admin route works!');
-});
-
-router.get('/users', authMiddleware.adminAuth, adminController.getUsersByAdmin);
-
+router.post('/create-user', adminAuth, createUser);
+router.post('/sign-in', signInAdmin);
+router.get('/forms', adminAuth, getAllForms);
 
 module.exports = router;

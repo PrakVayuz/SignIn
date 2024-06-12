@@ -1,10 +1,8 @@
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/Admin');
-// const jwt = require('jsonwebtoken');
-// const Admin = require('../models/Admin');
 const User = require('../models/User');
 
-require("dotenv").config();
+require('dotenv').config();
 
 module.exports.adminAuth = async (req, res, next) => {
     const token = req.header('Authorization').replace('Bearer ', '');
@@ -41,5 +39,3 @@ module.exports.userAuth = async (req, res, next) => {
         res.status(401).send({ error: 'Please authenticate' });
     }
 };
-
-
