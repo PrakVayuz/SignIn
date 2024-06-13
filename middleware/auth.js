@@ -22,12 +22,17 @@ module.exports.adminAuth = async (req, res, next) => {
     }
 };
 
+
 module.exports.userAuth = async (req, res, next) => {
-    const token = req.header('Authorization').replace('Bearer ', '');
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+
+    if (!token) {
+        return res.status(401).json({ error: 'Authentication token is required' });
+    }
 
     try {
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
-        const user = await User.findOne({ _id: decoded.userId });
+        const user = await User.findById(decoded.userId);
 
         if (!user) {
             throw new Error();
@@ -36,6 +41,7 @@ module.exports.userAuth = async (req, res, next) => {
         req.user = user;
         next();
     } catch (error) {
-        res.status(401).send({ error: 'Please authenticate' });
+        res.status(401).json({ error: 'Please authenticate' });
     }
 };
+

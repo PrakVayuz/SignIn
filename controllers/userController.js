@@ -24,12 +24,32 @@ exports.submitForm = async (req, res) => {
         const { name, contactNo, city, remarks, selectedEmoji } = req.body;
         const userId = req.user._id;
 
-        const form = new Form({ name, contactNo, city, remarks, selectedEmoji, user: userId });
+        const form = new Form({
+            name,
+            contactNo,
+            city,
+            remarks,
+            selectedEmoji,
+            user: userId,
+        });
+
         await form.save();
-
-        await User.findByIdAndUpdate(userId, { $push: { forms: form._id } });
-
         res.status(201).json({ message: 'Form submitted successfully', form });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+};
+
+exports.selectEmoji = async (req, res) => {
+    try {
+        const { selectedEmoji } = req.body;
+        if (!selectedEmoji) {
+            return res.status(400).json({ message: 'Emoji type is required' });
+        }
+
+        req.user.selectedEmoji = selectedEmoji;
+        await req.user.save();
+        res.status(200).json({ message: 'Emoji selected', selectedEmoji });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
