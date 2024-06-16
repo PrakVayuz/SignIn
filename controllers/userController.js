@@ -2,6 +2,7 @@ const User = require('../models/User');
 const Form = require('../models/Form');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const twilioClient = require('../twilio/twilio');
 
 exports.signInUser = async (req, res) => {
     try {
@@ -34,7 +35,15 @@ exports.submitForm = async (req, res) => {
         });
 
         await form.save();
-        res.status(201).json({ message: 'Form submitted successfully', form });
+
+        // Send thank you message
+        await twilioClient.messages.create({
+            body: `Thank you, ${name}, for submitting the form!`,
+            from: process.env.TWILIO_PHONE_NUMBER, // Your Twilio phone number
+            to: contactNo,
+        });
+
+        res.status(201).json({ message: 'Form submitted successfully and SMS sent', form });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
