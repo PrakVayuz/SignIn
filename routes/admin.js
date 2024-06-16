@@ -18,7 +18,7 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = twilio(accountSid, authToken);
 
-// Endpoint to upload Excel file and broadcast message
+
 router.post('/broadcast', adminAuth, upload.single('file'), async (req, res) => {
     try {
         const file = req.file;
