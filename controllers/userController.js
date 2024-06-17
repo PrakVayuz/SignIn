@@ -3,6 +3,8 @@ const Form = require('../models/Form');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const twilioClient = require('../twilio/twilio');
+require('dotenv').config();
+
 
 exports.signInUser = async (req, res) => {
     try {
@@ -35,13 +37,21 @@ exports.submitForm = async (req, res) => {
         });
 
         await form.save();
+        console.log('Twilio SID:', process.env.TWILIO_ACCOUNT_SID);
+console.log('Twilio Auth Token:', process.env.TWILIO_AUTH_TOKEN);
+console.log('Twilio Phone Number:', process.env.TWILIO_PHONE_NUMBER);
+
 
         // Send thank you message
-        await twilioClient.messages.create({
-            body: `Thank you, ${name}, for submitting the form!`,
-            from: process.env.TWILIO_PHONE_NUMBER, // Your Twilio phone number
-            to: contactNo,
-        });
+        const client = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+
+ client.messages.create({
+    body: 'Hello from Twilio',
+    from: process.env.TWILIO_PHONE_NUMBER,
+    to: '+91 9125377622'  // Replace with a valid phone number for testing
+})
+.then(message => console.log('Message sent:', message.sid))
+.catch(error => console.error('Error sending message:', error));
 
         res.status(201).json({ message: 'Form submitted successfully and SMS sent', form });
     } catch (error) {
