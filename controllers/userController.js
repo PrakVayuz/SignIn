@@ -43,15 +43,11 @@ console.log('Twilio Phone Number:', process.env.TWILIO_PHONE_NUMBER);
 
 
         // Send thank you message
-        const client = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-
- client.messages.create({
-    body: 'Hello from Twilio',
-    from: process.env.TWILIO_PHONE_NUMBER,
-    to: '+91 9125377622'  // Replace with a valid phone number for testing
-})
-.then(message => console.log('Message sent:', message.sid))
-.catch(error => console.error('Error sending message:', error));
+        await twilioClient.messages.create({
+            body: `Thank you, ${name}, for submitting the form!`,
+            from: process.env.TWILIO_PHONE_NUMBER, // Your Twilio phone number
+            to: contactNo,
+        });
 
         res.status(201).json({ message: 'Form submitted successfully and SMS sent', form });
     } catch (error) {
