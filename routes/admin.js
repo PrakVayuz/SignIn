@@ -30,13 +30,16 @@ router.post('/broadcast', adminAuth, upload.single('file'), async (req, res) => 
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
         const data = xlsx.utils.sheet_to_json(sheet);
-
+        
+        console.log("Data from Excel:", data); 
         const { message } = req.body;
         if (!message) {
             return res.status(400).json({ message: 'Message is required' });
         }
 
-        const phoneNumbers = data.map(row => row.contactNo);
+        const phoneNumbers = data.map(row => `+${row.contactNo}`);
+        console.log("Phone numbers:", phoneNumbers); // Log to see the phone numbers extracted
+
         for (const number of phoneNumbers) {
             await client.messages.create({
                 body: message,
