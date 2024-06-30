@@ -54,5 +54,25 @@ router.post('/broadcast', adminAuth, upload.single('file'), async (req, res) => 
     }
 });
 
+router.post('/send-message', adminAuth, async (req, res) => {
+    try {
+        const { phoneNumber, message } = req.body;
+
+        if (!phoneNumber || !message) {
+            return res.status(400).json({ message: 'Phone number and message are required' });
+        }
+
+        await client.messages.create({
+            body: message,
+            from: process.env.TWILIO_PHONE_NUMBER,
+            to: `+${phoneNumber}`,
+        });
+
+        res.status(200).json({ message: 'Message sent successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
+
 
 module.exports = router;
