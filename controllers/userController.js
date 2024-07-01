@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Form = require('../models/Form');
+const Admin = require('../models/Admin');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const twilioClient = require('../twilio/twilio');
@@ -22,10 +23,13 @@ exports.signInUser = async (req, res) => {
     }
 };
 
+// controllers/adminController.js
 exports.submitForm = async (req, res) => {
     try {
         const { name, contactNo, city, remarks, selectedEmoji } = req.body;
         const userId = req.user._id;
+
+        console.log('User ID:', userId);
 
         const form = new Form({
             name,
@@ -37,23 +41,32 @@ exports.submitForm = async (req, res) => {
         });
 
         await form.save();
-        console.log('Twilio SID:', process.env.TWILIO_ACCOUNT_SID);
-console.log('Twilio Auth Token:', process.env.TWILIO_AUTH_TOKEN);
-console.log('Twilio Phone Number:', process.env.TWILIO_PHONE_NUMBER);
 
+        const user = await User.findById(userId).populate('admin');
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        console.log('User:', user);
+        
+        const customMessage = user.admin.customMessage || 'Thank you for submitting the form!';
+
+        console.log('Custom Message:', customMessage);
 
         // Send thank you message
         await twilioClient.messages.create({
-            body: `Thank you, ${name}, for submitting the form!`,
-            from: process.env.TWILIO_PHONE_NUMBER, // Your Twilio phone number
+            body: `Thank you, ${name}, for submitting the form! ${customMessage}`,
+            from: process.env.TWILIO_PHONE_NUMBER, 
             to: contactNo,
         });
 
         res.status(201).json({ message: 'Form submitted successfully and SMS sent', form });
     } catch (error) {
+        console.error('Error:', error);
         res.status(500).json({ message: 'Server error', error });
     }
 };
+
 
 exports.selectEmoji = async (req, res) => {
     try {

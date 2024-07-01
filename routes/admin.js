@@ -6,6 +6,7 @@ const multer = require('multer');
 const xlsx = require('xlsx');
 const twilio = require('twilio');
 require('dotenv').config();
+const Admin = require('../models/Admin');
 
 router.post('/create-user', adminAuth, createUser);
 router.post('/sign-in', signInAdmin);
@@ -73,6 +74,41 @@ router.post('/send-message', adminAuth, async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 });
+
+router.post('/set-message', adminAuth, async (req, res) => {
+    try {
+        const { message } = req.body;
+        const adminId = req.admin._id;
+
+        if (!message) {
+            return res.status(400).json({ message: 'Message is required' });
+        }
+
+        await Admin.findByIdAndUpdate(adminId, { customMessage: message });
+
+        res.status(200).json({ message: 'Message updated successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
+
+router.get('/get-message', adminAuth, async (req, res) => {
+    try {
+        const adminId = req.admin._id;
+        const admin = await Admin.findById(adminId);
+
+        if (!admin) {
+            return res.status(404).json({ message: 'Admin not found' });
+        }
+
+        res.status(200).json({ message: admin.customMessage });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
+
+
+
 
 
 module.exports = router;
