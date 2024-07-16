@@ -65,3 +65,25 @@ exports.deleteAllForms = async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+
+exports.deleteAllUsers = async (req, res) => {
+    try {
+        // Assuming there is only one admin and we are deleting all users
+        const admin = await Admin.findOne();
+        if (!admin) {
+            return res.status(404).json({ message: 'Admin not found' });
+        }
+
+        // Delete all users associated with the admin
+        await User.deleteMany({ _id: { $in: admin.users } });
+
+        // Clear the users array in the admin document
+        admin.users = [];
+        await admin.save();
+
+        res.status(200).json({ message: 'All users deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting users:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};

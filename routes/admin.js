@@ -1,5 +1,5 @@
 const express = require('express');
-const { createUser, getAllForms, signInAdmin,getAllUsers, deleteAllForms} = require('../controllers/adminController');
+const { createUser, getAllForms, signInAdmin,getAllUsers, deleteAllForms, deleteAllUsers} = require('../controllers/adminController');
 const { adminAuth } = require('../middleware/auth');
 const router = express.Router();
 const multer = require('multer');
@@ -13,6 +13,7 @@ router.post('/sign-in', signInAdmin);
 router.get('/forms', adminAuth, getAllForms);
 router.get('/users', adminAuth, getAllUsers); 
 router.delete('/delete/forms', adminAuth, deleteAllForms);
+router.delete('/delete/users', adminAuth, deleteAllUsers);
 
 const upload = multer({ dest: 'uploads/' });
 
