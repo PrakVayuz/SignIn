@@ -25,7 +25,7 @@ const createDefaultAdmin = async () => {
     const adminExists = await Admin.findOne({ username: 'admin' });
 
     if (!adminExists) {
-        const hashedPassword = bcrypt.hashSync('Admin@2024', 8);
+        const hashedPassword = bcrypt.hashSync('Admin#2050', 8);
         const admin = new Admin({ username: 'admin', password: hashedPassword });
         await admin.save();
         console.log('Default admin created');

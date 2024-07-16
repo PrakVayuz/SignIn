@@ -55,3 +55,13 @@ exports.getAllUsers = async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+
+exports.deleteAllForms = async (req, res) => {
+    try {
+        await Form.deleteMany({});
+        res.status(200).json({ message: 'All forms deleted successfully' });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ message: 'Server error', error });
+    }
+};
