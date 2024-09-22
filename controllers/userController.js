@@ -26,13 +26,15 @@ exports.signInUser = async (req, res) => {
 // controllers/adminController.js
 exports.submitForm = async (req, res) => {
     try {
-        const { name, contactNo, city, remarks, selectedEmoji } = req.body;
+        const { 
+            // name, 
+            contactNo, city, remarks, selectedEmoji } = req.body;
         const userId = req.user._id;
 
         console.log('User ID:', userId);
 
         const form = new Form({
-            name,
+            // name,
             contactNo,
             city,
             remarks,
@@ -55,7 +57,8 @@ exports.submitForm = async (req, res) => {
 
         // Send thank you message
         await twilioClient.messages.create({
-            body: `Thank you, ${name}, for submitting the form! ${customMessage}`,
+            body: `Thank you, 
+            for submitting the form! ${customMessage}`,
             from: process.env.TWILIO_PHONE_NUMBER, 
             to: contactNo,
         });
